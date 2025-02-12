@@ -16,11 +16,9 @@ find_package(ros_gz_bridge REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-find_package(gz_transport_vendor REQUIRED)
-find_package(gz-transport REQUIRED)
+find_package(gz-transport13 REQUIRED)
 
-find_package(gz_msgs_vendor REQUIRED)
-find_package(gz-msgs REQUIRED)
+find_package(gz-msgs10 REQUIRED)
 
 include_directories(include)
 
@@ -33,8 +31,8 @@ add_executable(${executable}
 )
 
 target_link_libraries(${executable}
-  gz-msgs::core
-  gz-transport::core
+  gz-msgs10::core
+  gz-transport13::core
 )
 
 ament_target_dependencies(${executable}
@@ -69,7 +67,7 @@ if(BUILD_TESTING)
   #   target_link_libraries(${test_publisher}_image
   #     ${catkin_LIBRARIES}
   #     $gz-msgs$::core
-  #     $gz-transport::core
+  #     $gz-transport13::core
   #     gtest
   #     gtest_main
   #   )
@@ -81,8 +79,8 @@ if(BUILD_TESTING)
   #     test/subscribers/${test_subscriber}.cpp)
   #   target_link_libraries(test_${test_subscriber}_image
   #     ${catkin_LIBRARIES}
-  #     $gz-msgs::core
-  #     $gz-transport::core
+  #     $gz-msgs10::core
+  #     $gz-transport13::core
   #   )
   # endforeach(test_subscriber)
 endif()

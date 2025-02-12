@@ -16,19 +16,11 @@ find_package(rclcpp_components REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(std_msgs REQUIRED)
 
-find_package(gz_math_vendor REQUIRED)
-find_package(gz-math REQUIRED)
-
-find_package(gz_transport_vendor REQUIRED)
-find_package(gz-transport REQUIRED)
-
-find_package(gz_msgs_vendor REQUIRED)
-find_package(gz-msgs REQUIRED)
-
-find_package(gz_sim_vendor REQUIRED)
-find_package(gz-sim REQUIRED)
-# Needed in launch/gz_sim.launch.py.in
-set(GZ_SIM_VER ${gz-sim_VERSION_MAJOR})
+find_package(gz-math7 REQUIRED)
+find_package(gz-transport13 REQUIRED)
+find_package(gz-msgs10 REQUIRED)
+find_package(gz-sim8 REQUIRED)
+set(GZ_SIM_VER 8)
 
 gz_find_package(gflags
     REQUIRED
@@ -45,9 +37,9 @@ ament_target_dependencies(create
 )
 target_link_libraries(create
   gflags
-  gz-math::core
-  gz-msgs::core
-  gz-transport::core
+  gz-math7::core
+  gz-msgs10::core
+  gz-transport13::core
   rcpputils::rcpputils
 )
 
@@ -58,8 +50,8 @@ ament_target_dependencies(remove
 )
 
 target_link_libraries(remove
-  gz-msgs::core
-  gz-transport::core
+  gz-msgs10::core
+  gz-transport13::core
 )
 
 add_library(${PROJECT_NAME} SHARED src/Stopwatch.cpp)
@@ -84,7 +76,7 @@ ament_target_dependencies(gzserver_component
   std_msgs
 )
 target_link_libraries(gzserver_component
-  gz-sim::core
+  gz-sim8::core
 )
 ament_target_dependencies(gzserver_component std_msgs)
 rclcpp_components_register_node(
@@ -186,11 +178,11 @@ if(BUILD_TESTING)
     ${PROJECT_NAME}
   )
   target_link_libraries(test_create
-    gz-transport::core
+    gz-transport13::core
   )
 
   target_link_libraries(test_remove
-    gz-transport::core
+    gz-transport13::core
   )
 
   install(

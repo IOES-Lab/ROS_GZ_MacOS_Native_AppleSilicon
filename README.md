@@ -1,32 +1,91 @@
 [![Build Status](https://github.com/gazebosim/ros_gz/actions/workflows/ros2-ci.yml/badge.svg?branch=ros2)](https://github.com/gazebosim/ros_gz/actions/workflows/ros2-ci.yml)
 
-ROS 2 version | Gazebo version | Branch | Binaries hosted at
--- | -- | -- | --
-Foxy | Citadel | [foxy](https://github.com/gazebosim/ros_gz/tree/foxy) | https://packages.ros.org [^2]
-Foxy | Edifice | [foxy](https://github.com/gazebosim/ros_gz/tree/foxy) | only from source [^2]
-Galactic | Edifice | [galactic](https://github.com/gazebosim/ros_gz/tree/galactic) | https://packages.ros.org [^2]
-Galactic | Fortress | [galactic](https://github.com/gazebosim/ros_gz/tree/galactic) | only from source
-Humble | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | https://packages.ros.org
-Humble | Garden | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | [gazebo packages](https://gazebosim.org/docs/latest/ros_installation#gazebo-garden-with-ros-2-humble-iron-or-rolling-use-with-caution-)[^1] [^2]
-Humble | Harmonic | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | [gazebo packages](https://gazebosim.org/docs/harmonic/ros_installation#-gazebo-harmonic-with-ros-2-humble-iron-or-rolling-use-with-caution-)[^1]
-Iron | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | https://packages.ros.org
-Iron | Garden | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | only from source [^2]
-Iron | Harmonic | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | only from source
-Jazzy | Garden | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source [^2]
-Jazzy | Harmonic | [jazzy](https://github.com/gazebosim/ros_gz/tree/jazzy) | https://packages.ros.org
-Rolling | Garden | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source [^2]
-Rolling | Harmonic | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
-Rolling | Ionic | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | https://packages.ros.org
+# Notes for Apple Silicon Installation
 
-[^1]: Binaries for these pairings are provided from the packages.osrfoundation.org repository. Refer to https://gazebosim.org/docs/latest/ros_installation for installation instructions.
-[^2]: Note that the Gazebo version on this row has reached end-of-life.
+First, complete the installation of ROS2 Jazzy and Gazebo using [ROS2_Jazzy_MacOS_Native_AppleSilicon](https://github.com/IOES-Lab/ROS2_Jazzy_MacOS_Native_AppleSilicon).
+```
+# ROS2 Jazzy and Gazebo installation script (not needed if already executed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/IOES-Lab/ROS2_Jazzy_MacOS_Native_AppleSilicon/main/install.sh)"
+```
+Upon completion, the paths of the installed ROS2 Jazzy and Gazebo are saved in `$HOME/.ros2_jazzy_install_config`. (Default paths are `ros2_jazzy`, `gz_harmonic`)
+Check the contents of the config file with `cat $HOME/.ros2_jazzy_install_config`
 
-For information on ROS(1) and Gazebo compatibility, refer to the [noetic branch README](https://github.com/gazebosim/ros_gz/tree/noetic)
+Now, to install `ros_gz`, proceed as follows:
 
-[Details about the renaming process](README_RENAME.md) from `ign` to `gz` .
+- Diable SIP
+  - Restart the Mac with long press power button
+  - Select `Options` to boot into a recovery mode 
+  - Use `Utilities` -> `Terminal` and type below command to disable SIP
+    ```
+    csrutil disable
+    ```
 
-**Note**: The `ros_ign` prefixed packages are shim packages that redirect to their `ros_gz` counterpart.
-Under most circumstances you want to be using the `ros_gz` counterpart.
+- Make workspace directory
+  ```
+  mkdir -p $HOME/ros_gz_ws/src
+  git clone https://github.com/IOES-Lab/ROS_GZ_MacOS_Native_AppleSilicon.git
+  git clone https://github.com/swri-robotics/gps_umd.git
+  git clone https://github.com/rudislabs/actuator_msgs.git
+  git clone https://github.com/ros-perception/vision_msgs.git
+  cd $HOME/ros_gz_ws
+  ```
+
+- Set environment variables
+  ```
+  export CMAKE_PREFIX_PATH=$(brew --prefix qt@5)/lib:$(brew --prefix qt@5)/lib/cmake:/opt/homebrew/opt:${CMAKE_PREFIX_PATH}
+  export PATH=$(brew --prefix qt@5)/bin:$PATH
+  # This is rough.. but works
+  ln -s $(brew --prefix qt@5)/mkspecs /opt/homebrew/mkspecs
+  ln -s $(brew --prefix qt@5)/plugins /opt/homebrew/plugins
+  ```
+
+- Modify `TINYXML2:TINYXML2` at `gz-msgs10` cmake file
+  ```
+  sudo nano /opt/homebrew/opt/gz-msgs10/lib/cmake/gz-msgs10/gz-msgs10-targets.cmake
+  # Find TINYXML2:TINYXML2 and replace with tinyxml2::tinyxml2
+  ```
+
+- Compile
+  ```
+  source $HOME/ros2_jazzy/activate_ros
+  python3.11 -m colcon build --symlink-install \
+      --packages-skip-by-dep python_qt_binding \
+      --cmake-args \
+      -DBUILD_TESTING=OFF \
+      -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
+      -Wno-dev --event-handlers console_cohesion+
+  ```
+
+- Add script to activate_ros
+  ```
+  # If Bash
+  echo "source $HOME/ros_gz_ws/install/setup.bash" >> $HOME/ros2_jazzy/activate_ros
+  # If Zsh
+  echo "source $HOME/ros_gz_ws/install/setup.zsh" >> $HOME/ros2_jazzy/activate_ros
+  ```
+
+- Revert back `TINYXML2:TINYXML2` at `gz-msgs10` cmake file
+  ```
+  sudo nano /opt/homebrew/opt/gz-msgs10/lib/cmake/gz-msgs10/gz-msgs10-targets.cmake
+  # Find tinyxml2::tinyxml2 and replace with  TINYXML2:TINYXML2
+  ```
+
+- Re-enable SIP
+  - Restart the Mac with long press power button
+  - Select `Options` to boot into a recovery mode 
+  - Use `Utilities` -> `Terminal` and type below command to disable SIP
+    ```
+    csrutil enable
+    ```
+
+## Notes
+
+- Finding the USB connection port
+  ```
+  system_profiler SPUSBDataType | awk '/ArduPilot/{found=1} found && /Location ID/{print "/dev/cu.usbmodem" int(substr($3,3,3) "01"); found=0}'
+  ```
+
+
 
 # Integration between ROS and Gazebo
 
@@ -56,86 +115,3 @@ This repository holds packages that provide integration between
   Plugins for publishing point clouds to ROS from
   [Gazebo Sim](https://gazebosim.org/libs/gazebo) simulations.
 
-## Install
-
-This branch supports ROS Rolling. See above for other ROS versions.
-
-### Binaries
-
-Rolling binaries are available for Fortress.
-They are hosted at https://packages.ros.org.
-
-1. Add https://packages.ros.org
-
-        sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
-        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-        sudo apt-get update
-
-1. Install `ros_gz`
-
-        sudo apt install ros-rolling-ros-gz
-
-### From source
-
-#### ROS
-
-Be sure you've installed
-[ROS Rolling](https://docs.ros.org/en/rolling/index.html)
-(at least ROS-Base). More ROS dependencies will be installed below.
-
-#### Gazebo
-
-Install either [Fortress, Harmonic or Ionic](https://gazebosim.org/docs).
-
-Set the `GZ_VERSION` environment variable to the Gazebo version you'd
-like to compile against. For example:
-
-    export GZ_VERSION=harmonic # IMPORTANT: Replace with correct version
-
-> You only need to set this variable when compiling, not when running.
-
-#### Compile ros_gz
-
-The following steps are for Linux and macOS.
-
-1. Create a colcon workspace:
-
-    ```
-    # Setup the workspace
-    mkdir -p ~/ws/src
-    cd ~/ws/src
-
-    # Download needed software
-    git clone https://github.com/gazebosim/ros_gz.git -b ros2
-    ```
-
-1. Install dependencies (this may also install Gazebo):
-
-    ```
-    cd ~/ws
-    rosdep install -r --from-paths src -i -y --rosdistro rolling
-    ```
-
-    > If `rosdep` fails to install Gazebo libraries and you have not installed them before, please follow [Gazebo installation instructions](https://gazebosim.org/docs/latest/install).
-
-1. Build the workspace:
-
-    ```
-    # Source ROS distro's setup.bash
-    source /opt/ros/<distro>/setup.bash
-
-    # Build and install into workspace
-    cd ~/ws
-    colcon build
-    ```
-  > [!TIP]
-  > The `ros_gz` library makes heavy use of templates which causes compilers to consume a lot of memory. If your build fails with `c++: fatal error: Killed signal terminated program cc1plus`
-  > try building with `colcon build --parallel-workers=1 --executor sequential`. You might also have to set `export MAKEFLAGS="-j 1"` before running `colcon build` to limit
-  > the number of processors used to build a single package.
-
-## ROSCon 2022
-
-[![](img/video_img.png)](https://vimeo.com/showcase/9954564/video/767127300)
-
-## Project Template
-[A template project integrating ROS and Gazebo simulator](https://github.com/gazebosim/ros_gz_project_template)

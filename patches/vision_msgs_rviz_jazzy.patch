@@ -1,0 +1,108 @@
+diff --git a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d.hpp b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d.hpp
+index 10b9de4..828cea1 100644
+--- a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d.hpp
++++ b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d.hpp
+@@ -54,7 +54,7 @@ public:
+   BOUNDING_BOX_3D_DISPLAY_HPP_PUBLIC
+   void load(const rviz_common::Config & config) override;
+   BOUNDING_BOX_3D_DISPLAY_HPP_PUBLIC
+-  void update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt) override;
++  void update(float wall_dt, float ros_dt) override;
+   BOUNDING_BOX_3D_DISPLAY_HPP_PUBLIC
+   void reset() override;
+ 
+diff --git a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d_array.hpp b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d_array.hpp
+index 1bed299..d02d759 100644
+--- a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d_array.hpp
++++ b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/bounding_box_3d_array.hpp
+@@ -56,7 +56,7 @@ public:
+   BOUNDING_BOX_3D_ARRAY_DISPLAY_HPP_PUBLIC
+   void load(const rviz_common::Config & config) override;
+   BOUNDING_BOX_3D_ARRAY_DISPLAY_HPP_PUBLIC
+-  void update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt) override;
++  void update(float wall_dt, float ros_dt) override;
+   BOUNDING_BOX_3D_ARRAY_DISPLAY_HPP_PUBLIC
+   void reset() override;
+ 
+diff --git a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d.hpp b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d.hpp
+index f6898db..bca5ad4 100644
+--- a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d.hpp
++++ b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d.hpp
+@@ -55,7 +55,7 @@ public:
+   DETECTION_3D_DISPLAY_HPP_PUBLIC
+   void load(const rviz_common::Config & config) override;
+   DETECTION_3D_DISPLAY_HPP_PUBLIC
+-  void update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt) override;
++  void update(float wall_dt, float ros_dt) override;
+   DETECTION_3D_DISPLAY_HPP_PUBLIC
+   void reset() override;
+ 
+diff --git a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d_array.hpp b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d_array.hpp
+index 6503503..3f0a928 100644
+--- a/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d_array.hpp
++++ b/vision_msgs_rviz_plugins/include/vision_msgs_rviz_plugins/detection_3d_array.hpp
+@@ -59,7 +59,7 @@ public:
+   DETECTION_3D_ARRAY_DISPLAY_HPP_PUBLIC
+   void load(const rviz_common::Config & config) override;
+   DETECTION_3D_ARRAY_DISPLAY_HPP_PUBLIC
+-  void update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt) override;
++  void update(float wall_dt, float ros_dt) override;
+   DETECTION_3D_ARRAY_DISPLAY_HPP_PUBLIC
+   void reset() override;
+ 
+diff --git a/vision_msgs_rviz_plugins/src/bounding_box_3d.cpp b/vision_msgs_rviz_plugins/src/bounding_box_3d.cpp
+index 9affa38..886010f 100644
+--- a/vision_msgs_rviz_plugins/src/bounding_box_3d.cpp
++++ b/vision_msgs_rviz_plugins/src/bounding_box_3d.cpp
+@@ -81,7 +81,7 @@ void BoundingBox3DDisplay::processMessage(
+   }
+ }
+ 
+-void BoundingBox3DDisplay::update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt)
++void BoundingBox3DDisplay::update(float wall_dt, float ros_dt)
+ {
+   m_marker_common->update(wall_dt, ros_dt);
+ }
+diff --git a/vision_msgs_rviz_plugins/src/bounding_box_3d_array.cpp b/vision_msgs_rviz_plugins/src/bounding_box_3d_array.cpp
+index 481c9ac..2e03107 100644
+--- a/vision_msgs_rviz_plugins/src/bounding_box_3d_array.cpp
++++ b/vision_msgs_rviz_plugins/src/bounding_box_3d_array.cpp
+@@ -81,9 +81,7 @@ void BoundingBox3DArrayDisplay::processMessage(
+   }
+ }
+ 
+-void BoundingBox3DArrayDisplay::update(
+-  std::chrono::nanoseconds wall_dt,
+-  std::chrono::nanoseconds ros_dt)
++void BoundingBox3DArrayDisplay::update(float wall_dt, float ros_dt)
+ {
+   m_marker_common->update(wall_dt, ros_dt);
+ }
+diff --git a/vision_msgs_rviz_plugins/src/detection_3d.cpp b/vision_msgs_rviz_plugins/src/detection_3d.cpp
+index 2a9ac73..83d42bb 100644
+--- a/vision_msgs_rviz_plugins/src/detection_3d.cpp
++++ b/vision_msgs_rviz_plugins/src/detection_3d.cpp
+@@ -84,7 +84,7 @@ void Detection3DDisplay::processMessage(
+   }
+ }
+ 
+-void Detection3DDisplay::update(std::chrono::nanoseconds wall_dt, std::chrono::nanoseconds ros_dt)
++void Detection3DDisplay::update(float wall_dt, float ros_dt)
+ {
+   m_marker_common->update(wall_dt, ros_dt);
+ }
+diff --git a/vision_msgs_rviz_plugins/src/detection_3d_array.cpp b/vision_msgs_rviz_plugins/src/detection_3d_array.cpp
+index 4eb805a..3f2d60c 100644
+--- a/vision_msgs_rviz_plugins/src/detection_3d_array.cpp
++++ b/vision_msgs_rviz_plugins/src/detection_3d_array.cpp
+@@ -84,9 +84,7 @@ void Detection3DArrayDisplay::processMessage(
+   }
+ }
+ 
+-void Detection3DArrayDisplay::update(
+-  std::chrono::nanoseconds wall_dt,
+-  std::chrono::nanoseconds ros_dt)
++void Detection3DArrayDisplay::update(float wall_dt, float ros_dt)
+ {
+   m_marker_common->update(wall_dt, ros_dt);
+ }

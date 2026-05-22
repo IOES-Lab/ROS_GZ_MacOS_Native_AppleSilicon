@@ -12,21 +12,20 @@ Check the contents of the config file with `cat $HOME/.ros2_jazzy_install_config
 
 Now, to install `ros_gz`, proceed as follows:
 
-- Diable SIP
-  - Restart the Mac with long press power button
-  - Select `Options` to boot into a recovery mode 
-  - Use `Utilities` -> `Terminal` and type below command to disable SIP
-    ```
-    csrutil disable
-    ```
-
 - Make workspace directory
   ```
-  mkdir -p $HOME/ros_gz_ws/src
+  mkdir -p $HOME/ros_gz_ws/src && cd $HOME/ros_gz_ws/src
   git clone https://github.com/IOES-Lab/ROS_GZ_MacOS_Native_AppleSilicon.git
-  git clone https://github.com/swri-robotics/gps_umd.git
-  git clone https://github.com/rudislabs/actuator_msgs.git
-  git clone https://github.com/ros-perception/vision_msgs.git
+  git clone --branch 2.1.2 https://github.com/swri-robotics/gps_umd.git
+  git clone --branch 0.0.1 https://github.com/rudislabs/actuator_msgs.git
+  git clone https://github.com/ros-perception/vision_msgs.git && cd vision_msgs && git checkout 1adca4d && cd ..
+  cd $HOME/ros_gz_ws
+  ```
+
+- Apply patches
+  ```
+  cd $HOME/ros_gz_ws/src/vision_msgs
+  git apply ../ROS_GZ_MacOS_Native_AppleSilicon/patches/vision_msgs_rviz_jazzy.patch
   cd $HOME/ros_gz_ws
   ```
 
@@ -69,14 +68,6 @@ Now, to install `ros_gz`, proceed as follows:
   sudo nano /opt/homebrew/opt/gz-msgs10/lib/cmake/gz-msgs10/gz-msgs10-targets.cmake
   # Find tinyxml2::tinyxml2 and replace with  TINYXML2:TINYXML2
   ```
-
-- Re-enable SIP
-  - Restart the Mac with long press power button
-  - Select `Options` to boot into a recovery mode 
-  - Use `Utilities` -> `Terminal` and type below command to disable SIP
-    ```
-    csrutil enable
-    ```
 
 ## Notes
 

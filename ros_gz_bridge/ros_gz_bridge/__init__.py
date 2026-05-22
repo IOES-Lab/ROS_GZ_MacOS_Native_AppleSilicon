@@ -20,7 +20,14 @@ from ros_gz_bridge.mappings import MAPPINGS
 
 from rosidl_pycommon import expand_template
 
-from . import actions
+
+def __getattr__(name):
+    if name == 'actions':
+        from . import actions as _actions
+        globals()['actions'] = _actions
+        return _actions
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     'actions',
